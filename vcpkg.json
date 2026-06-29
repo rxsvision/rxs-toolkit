@@ -1,0 +1,32 @@
+{
+    "name": "rxs-toolkit",
+    "version": "1.0.0",
+    "description": "RXS core toolkit library - 3D measurement algorithms",
+    "dependencies": [
+        {
+            "name": "pcl",
+            "version>=": "1.14.0"
+        },
+        {
+            "name": "opencv4",
+            "version>=": "4.8.0"
+        },
+        {
+            "name": "eigen3",
+            "version>=": "3.4.0"
+        },
+        {
+            "name": "flann",
+            "version>=": "1.9.2"
+        },
+        {
+            "name": "boost-system",
+            "version>=": "1.83.0"
+        },
+        {
+            "name": "boost-filesystem",
+            "version>=": "1.83.0"
+        }
+    ],
+    "builtin-baseline": "2024-01-01"
+}
