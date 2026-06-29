@@ -55,6 +55,13 @@ set(RXS_TOOLKIT_SOURCES
     PointGrid.cpp
     utils.cpp
     czxDependence/czxTool.cpp
+    src/rxs_api.cpp
+)
+
+# Public API headers (installed for consumers)
+set(RXS_API_HEADERS
+    include/rxs/rxs_export.h
+    include/rxs/rxs_api.h
 )
 
 set(RXS_TOOLKIT_HEADERS
@@ -87,7 +94,7 @@ endif()
 # ---------------------------------------------------------------------------
 # Create shared library
 # ---------------------------------------------------------------------------
-add_library(rxs-toolkit SHARED ${RXS_TOOLKIT_SOURCES} ${RXS_TOOLKIT_HEADERS})
+add_library(rxs-toolkit SHARED ${RXS_TOOLKIT_SOURCES} ${RXS_TOOLKIT_HEADERS} ${RXS_API_HEADERS})
 
 set_target_properties(rxs-toolkit PROPERTIES
     OUTPUT_NAME "czxToolkit"
@@ -128,14 +135,19 @@ endif()
 # ---------------------------------------------------------------------------
 # Include directories
 # ---------------------------------------------------------------------------
-target_include_directories(rxs-toolkit PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/czxDependence
-    ${PCL_INCLUDE_DIRS}
-    ${OpenCV_INCLUDE_DIRS}
-    ${EIGEN3_INCLUDE_DIR}
-    ${FLANN_INCLUDE_DIRS}
-    ${Boost_INCLUDE_DIRS}
+# PUBLIC: include/ is part of the public API (consumers need it)
+# PRIVATE: internal headers only needed at compile time
+target_include_directories(rxs-toolkit
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/czxDependence
+        ${PCL_INCLUDE_DIRS}
+        ${OpenCV_INCLUDE_DIRS}
+        ${EIGEN3_INCLUDE_DIR}
+        ${FLANN_INCLUDE_DIRS}
+        ${Boost_INCLUDE_DIRS}
 )
 
 # ---------------------------------------------------------------------------
@@ -143,6 +155,7 @@ target_include_directories(rxs-toolkit PRIVATE
 # ---------------------------------------------------------------------------
 target_compile_definitions(rxs-toolkit PRIVATE
     CZXTOOLKIT_EXPORTS
+    RXS_TOOLKIT_EXPORTS
     _WINDOWS
     _USRDLL
     NOMINMAX
@@ -183,8 +196,14 @@ install(TARGETS rxs-toolkit
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
+# Install legacy headers (for backward compatibility)
 install(FILES ${RXS_TOOLKIT_HEADERS}
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/rxs-toolkit
+)
+
+# Install public API headers
+install(FILES ${RXS_API_HEADERS}
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/rxs
 )
 
 # ---------------------------------------------------------------------------
@@ -196,5 +215,6 @@ message(STATUS "  CUDA:          ${RXS_BUILD_CUDA}")
 message(STATUS "  PCH:           ${RXS_USE_PCH}")
 message(STATUS "  PCL:           ${PCL_VERSION}")
 message(STATUS "  OpenCV:        ${OpenCV_VERSION}")
+message(STATUS "  API Layer:     namespace rxs (rxs_api.h)")
 message(STATUS "  Source files:  ${RXS_TOOLKIT_SOURCES}")
 message(STATUS "=================================")
