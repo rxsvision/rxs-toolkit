@@ -11,14 +11,16 @@ Release/
 *.dll
 *.exe
 
-# Visual Studio
-.vs/
+# Visual Studio (legacy — replaced by CMake)
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.props
 *.suo
 *.user
 *.userosscache
 *.sln.docstates
-*.vcxproj.filters
-*.vcxproj.user
 packages/
 
 # CMake
