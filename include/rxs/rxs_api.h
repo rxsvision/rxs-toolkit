@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 /// @file rxs_api.h
 /// @brief RXS Toolkit Modern C++ API (namespace rxs)
