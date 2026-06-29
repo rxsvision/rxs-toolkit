@@ -29,7 +29,7 @@ RXS Toolkit 是锐新视 3D 测量算法库的核心公共组件，提供 18 个
 | 17 | `photometricStero_ivs` | 光度立体 (多视角+阴影) | dllmain.cpp |
 | 18 | `photometricStero_ivss` | 光度立体 (多视角+双阴影) | dllmain.cpp |
 
-> **注意**: `holeDeepth` 在消费者代码中被引用 (`GetProcAddress(dllHander, "holeDeepth")`)，但 DLL 导出表和源码中均无实现。此为**幽灵引用**，运行时返回 NULL。
+> **已修复**: `holeDeepth` 幽灵引用已在所有消费者代码中清除 (2026-06-29)。原消费者代码通过 `GetProcAddress(dllHander, "holeDeepth")` 引用此函数，但 DLL 导出表和源码中均无实现，运行时返回 NULL。现已从 3 个版本的 6 个 `protected_rxsToolKit.h/.cpp` 文件中移除声明、注册、switch case 和实现共 24 处引用。
 
 ## 目录结构
 
