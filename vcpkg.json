@@ -16,10 +16,6 @@
             "version>=": "3.4.0"
         },
         {
-            "name": "flann",
-            "version>=": "1.9.2"
-        },
-        {
             "name": "boost-system",
             "version>=": "1.83.0"
         },
