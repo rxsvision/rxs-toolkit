@@ -29,6 +29,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     return TRUE;
 }
 
+#ifdef RXS_HAS_PCL_ON_NURBS
 /// <summary>
 /// 
 /// </summary>
@@ -41,6 +42,7 @@ __declspec(dllexport) vector<double> fitBSpline_(CP cloud, bool visual=false)
     bsp.visual = visual;
     return bsp.fitBSpline(cloud);
 }
+#endif
 
 CP findPlane(CP cloud, double min_x, double max_x, double min_y, double max_y)
 {

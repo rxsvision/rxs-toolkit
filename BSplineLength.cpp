@@ -1,5 +1,7 @@
 ﻿#include "BSplineLength.h"
 
+#ifdef RXS_HAS_PCL_ON_NURBS
+
 //#define CZX_DEBUG
 
 BSplineLength::BSplineLength()
@@ -665,3 +667,5 @@ double BSplineLength::curveLengthGaussian(const ON_NurbsCurve& nurbs)
 
 	return ret;
 }
+
+#endif // RXS_HAS_PCL_ON_NURBS

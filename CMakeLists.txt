@@ -8,6 +8,7 @@ project(rxs-toolkit VERSION 1.0.0 LANGUAGES CXX)
 option(RXS_BUILD_CUDA "Enable CUDA support for photometricStero" OFF)
 option(RXS_BUILD_TESTS "Build test executables" OFF)
 option(RXS_USE_PCH "Use precompiled headers" ON)
+option(RXS_ENABLE_VISUALIZATION "Enable PCL visualization support (requires VTK)" OFF)
 
 # ---------------------------------------------------------------------------
 # C++ Standard
@@ -21,8 +22,30 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # ---------------------------------------------------------------------------
 find_package(PCL 1.10 REQUIRED COMPONENTS
     common features filters io io_ply kdtree sample_consensus search
-    segmentation surface registration visualization
+    segmentation surface registration
 )
+
+# Optional: PCL visualization (VTK-based) — only when explicitly enabled
+if(RXS_ENABLE_VISUALIZATION)
+    find_package(PCL COMPONENTS visualization)
+    if(PCL_visualization_FOUND)
+        message(STATUS "  PCL visualization: ENABLED")
+    else()
+        message(WARNING "PCL visualization component not found; building without it.")
+        set(RXS_ENABLE_VISUALIZATION OFF)
+    endif()
+endif()
+
+# PCL on_nurbs module (removed in PCL 1.14+)
+include(CheckIncludeFileCXX)
+set(CMAKE_REQUIRED_INCLUDES ${PCL_INCLUDE_DIRS})
+check_include_file_cxx("pcl/surface/on_nurbs/fitting_curve_2d_apdm.h" RXS_HAS_PCL_ON_NURBS)
+unset(CMAKE_REQUIRED_INCLUDES)
+if(RXS_HAS_PCL_ON_NURBS)
+    message(STATUS "  PCL on_nurbs:     AVAILABLE")
+else()
+    message(STATUS "  PCL on_nurbs:     NOT FOUND (BSplineLength disabled)")
+endif()
 find_package(OpenCV REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(FLANN REQUIRED)
@@ -42,7 +65,6 @@ endif()
 # ---------------------------------------------------------------------------
 set(RXS_TOOLKIT_SOURCES
     dllmain.cpp
-    BSplineLength.cpp
     ColorModel.cpp
     CzxRansac.cpp
     Hole.cpp
@@ -58,6 +80,10 @@ set(RXS_TOOLKIT_SOURCES
     src/rxs_api.cpp
 )
 
+if(RXS_HAS_PCL_ON_NURBS)
+    list(APPEND RXS_TOOLKIT_SOURCES BSplineLength.cpp)
+endif()
+
 # Public API headers (installed for consumers)
 set(RXS_API_HEADERS
     include/rxs/rxs_export.h
@@ -69,7 +95,6 @@ set(RXS_TOOLKIT_HEADERS
     pch.h
     types_.h
     utlis.h
-    BSplineLength.h
     ColorModel.h
     CzxRansac.h
     Hole.h
@@ -84,6 +109,10 @@ set(RXS_TOOLKIT_HEADERS
     nanoflann.hpp
     czxDependence/czxTool.h
 )
+
+if(RXS_HAS_PCL_ON_NURBS)
+    list(APPEND RXS_TOOLKIT_HEADERS BSplineLength.h)
+endif()
 
 # CUDA source (conditional)
 if(RXS_BUILD_CUDA)
@@ -169,6 +198,14 @@ if(RXS_BUILD_CUDA)
     target_compile_definitions(rxs-toolkit PRIVATE RXS_ENABLE_CUDA)
 endif()
 
+if(RXS_ENABLE_VISUALIZATION)
+    target_compile_definitions(rxs-toolkit PUBLIC RXS_HAS_VISUALIZATION)
+endif()
+
+if(RXS_HAS_PCL_ON_NURBS)
+    target_compile_definitions(rxs-toolkit PRIVATE RXS_HAS_PCL_ON_NURBS)
+endif()
+
 # ---------------------------------------------------------------------------
 # Link libraries
 # ---------------------------------------------------------------------------
@@ -213,6 +250,7 @@ message(STATUS "=== rxs-toolkit Configuration ===")
 message(STATUS "  C++ Standard:  ${CMAKE_CXX_STANDARD}")
 message(STATUS "  CUDA:          ${RXS_BUILD_CUDA}")
 message(STATUS "  PCH:           ${RXS_USE_PCH}")
+message(STATUS "  Visualization: ${RXS_ENABLE_VISUALIZATION}")
 message(STATUS "  PCL:           ${PCL_VERSION}")
 message(STATUS "  OpenCV:        ${OpenCV_VERSION}")
 message(STATUS "  API Layer:     namespace rxs (rxs_api.h)")

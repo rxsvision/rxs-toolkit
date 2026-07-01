@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include<iostream>//标准C++库中的输入输出类相关头文件。
-#include<pcl/io/io.h>
 #include<pcl/io/pcd_io.h>//pcd 读写类相关的头文件。
 #include<pcl/io/ply_io.h>
 #include<pcl/point_types.h> //PCL中支持的点类型头文件。
@@ -73,7 +72,7 @@ public:
 		//}
 
 		extract.setInputCloud(cloud);
-		extract.setIndices(boost::make_shared<pcl::PointIndices>(cluster_indices[0]));
+		extract.setIndices(std::make_shared<pcl::PointIndices>(cluster_indices[0]));
 		extract.filter(*cloud_filtered);
 		//Tool::showComparison(cloud, cloud_filtered);
 
