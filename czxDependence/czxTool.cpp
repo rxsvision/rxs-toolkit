@@ -8,6 +8,7 @@
 
 
 string CzxTimer::path = "";
+#ifdef RXS_HAS_VISUALIZATION
 std::mutex Tool::mtx_showComparison_ccss;
 mutex Tool::tex;
 
@@ -28,7 +29,7 @@ selectCatch(const pcl::visualization::AreaPickingEvent& event, void* args)
 
 	CloudT::Ptr selected_cloud(new CloudT);
 	pcl::ExtractIndices<PointT> extract;
-	extract.setIndices(boost::make_shared<pcl::PointIndices>(p_ind));
+	extract.setIndices(std::make_shared<pcl::PointIndices>(p_ind));
 	extract.setInputCloud(cloud_);
 	extract.filter(*selected_cloud);
 
@@ -196,6 +197,7 @@ Tool::showComparison(CloudNT::Ptr c1, CloudT::Ptr c2)
 	viewer.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 0, 1, 0, "2");
 	viewer.spin();
 }
+#endif // RXS_HAS_VISUALIZATION
 
 void
 Tool::saveMatrix4f(Eigen::Matrix4f data, string filename)
@@ -284,7 +286,9 @@ namespace arsenal
 			//std::cout << inverted << std::endl;
 			ret->getMatrixXfMap(3, 4, 0).row(i) = inverted.real();
 		}
+#ifdef RXS_HAS_VISUALIZATION
 		Tool::showComparison(cloud, ret);
+#endif
 	}
 	vector<string> pathGather(string root, string file)
 	{
@@ -471,12 +475,16 @@ namespace arsenal
 
 		if (dif2to1->size() > 0)
 		{
+#ifdef RXS_HAS_VISUALIZATION
 			Tool::showComparison(c1, c2, dif2to1, 2, 2, 4);
+#endif
 			//pcl::io::savePCDFileBinary("dif21.pcd", *dif2to1);
 		}
 		if (dif1to2->size() > 0)
 		{
+#ifdef RXS_HAS_VISUALIZATION
 			Tool::showComparison(c1, c2, dif1to2, 2, 2, 4);
+#endif
 			//pcl::io::savePCDFileBinary("dif12.pcd", *dif1to2);
 
 		}

@@ -11,12 +11,15 @@
 #include<vector>
 #include<array>
 #include<filesystem>
+#ifdef RXS_HAS_PCL_ON_NURBS
 #include <pcl/surface/on_nurbs/fitting_curve_2d_apdm.h>
 #include <pcl/surface/on_nurbs/fitting_curve_2d.h>
 #include <pcl/surface/on_nurbs/triangulation.h>
+#endif
 #include <pcl/common/distances.h>
 #include <pcl/filters/voxel_grid.h>
 
+#ifdef RXS_HAS_PCL_ON_NURBS
 class BSplineLength
 {
 public:
@@ -54,3 +57,4 @@ public:
 	vector<CP> fitted_y;
 	bool visual;
 };
+#endif
